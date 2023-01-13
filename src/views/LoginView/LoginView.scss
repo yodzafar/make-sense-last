@@ -1,0 +1,51 @@
+@import "../../settings/_Settings";
+
+.Login {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  &Logo {
+    position: fixed;
+    width: 220px;
+    left: 20px;
+    top: 20px;
+
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  &Card {
+    width: 400px;
+    border-radius: 4px;
+    padding: 20px;
+    position: relative;
+    background-color: #282828;
+
+    &::before {
+      content: "";
+      z-index: -1;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background-image: linear-gradient(
+        to top right,
+        $primaryColor,
+        $secondaryColor
+      );
+      background-size: 400% 400%;
+      animation: backgroundAnimation 10s ease-in-out infinite;
+      transform: translate3d(0px, 3px, 0) scaleX(1.04);
+      filter: blur(20px);
+      opacity: .5;
+      transition: opacity 0.3s;
+    }
+  }
+}

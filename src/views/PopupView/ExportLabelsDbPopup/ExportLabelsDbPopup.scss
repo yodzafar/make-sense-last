@@ -1,0 +1,31 @@
+.ExportDbWrapper {
+  padding: 20px;
+  min-height: 100px;
+  width: 100%;
+
+  .Message {
+    align-self: stretch;
+    color: white;
+    font-size: 15px;
+    padding: 30px 40px;
+    border-bottom: solid 1px #171717;
+  }
+
+  .ImageButton {
+    transition: transform 0.3s;
+
+    img {
+      filter: brightness(0) invert(1);
+    }
+
+    &:hover {
+      border-radius: 3px;
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    &.active {
+      border-radius: 3px;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+  }
+}

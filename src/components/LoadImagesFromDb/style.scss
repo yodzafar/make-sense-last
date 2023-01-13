@@ -1,0 +1,42 @@
+.ImageFromDbWrapper {
+  .icon-folder {
+    background-image: url('/ico/folder.png');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 100%;
+    height: 100%;
+  }
+
+  .data-item {
+    cursor: pointer;
+    transition: .3s ease;
+    padding: 8px;
+
+    &:hover {
+      background-color: #4c4c4c;
+    }
+
+    &.selected {
+      background-color: rgba(0, 158, 253, 0.68);
+    }
+
+    &-image {
+      width: 100%;
+      height: 100px;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: auto;
+      }
+    }
+
+    h6 {
+      margin-top: 6px;
+      margin-bottom: 0;
+      color: #fff;
+      font-size: 13px;
+    }
+  }
+}

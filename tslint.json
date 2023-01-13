@@ -1,0 +1,19 @@
+{
+  "extends": [
+    "tslint:recommended",
+    "tslint-react"
+  ],
+  "rules": {
+    "jsx-no-lambda": false,
+    "@typescript-eslint/ban-ts-comment": true,
+    "jsx-boolean-value": false,
+    "max-line-length": {
+      "options": [120]
+    },
+    "quotemark": [
+      true,
+      "single",
+      "avoid-escape"
+    ]
+  }
+}
