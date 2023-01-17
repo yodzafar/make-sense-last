@@ -1,14 +1,15 @@
-import { GeneralActionTypes, GeneralState } from './types';
-import { Action } from '../Actions';
-import { CustomCursorStyle } from '../../data/enums/CustomCursorStyle';
-import { ViewPointSettings } from '../../settings/ViewPointSettings';
-import { ProjectType } from '../../data/enums/ProjectType';
 import Cookies from 'js-cookie';
+import { PopupWindowType } from '../../data/enums/PopupWindowType';
+import { CustomCursorStyle } from '../../data/enums/CustomCursorStyle';
+import { ProjectType } from '../../data/enums/ProjectType';
+import { ViewPointSettings } from '../../settings/ViewPointSettings';
+import { Action } from '../Actions';
+import { GeneralActionTypes, GeneralState } from './types';
 
 const initialState: GeneralState = {
   isAuth: !!Cookies.get('token'),
   windowSize: null,
-  activePopupType: null,
+  activePopupType: PopupWindowType.DIRECTORY,
   customCursorStyle: CustomCursorStyle.DEFAULT,
   activeContext: null,
   preventCustomCursor: false,
@@ -20,7 +21,7 @@ const initialState: GeneralState = {
     name: 'my-project-name',
   },
   zoom: ViewPointSettings.MIN_ZOOM,
-  imageActionType: null,
+  imageActionType: 'db',
 };
 
 export function generalReducer(

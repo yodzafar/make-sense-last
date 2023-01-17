@@ -4,15 +4,21 @@ import { store } from '../index';
 import { updateProjectAuth } from '../store/general/actionCreators';
 
 const httpClient = axios.create({
-  baseURL: 'http://176.96.241.203:8080'
+  baseURL: 'https://makesense-bridge-production.up.railway.app',
+  withCredentials: false,
+  headers: {
+    'Access-Control-Allow-Origin' : '*',
+    'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+  }
 });
-
 
 httpClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error && error.response) {
-      const { response: { status } } = error;
+      const {
+        response: { status },
+      } = error;
       if (status === 401) {
         Cookies.remove('token');
         Cookies.remove('refresh-token');

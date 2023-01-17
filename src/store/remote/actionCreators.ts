@@ -1,15 +1,15 @@
-import api from '../../service/api';
+import api, { TaskImageQuery } from '../../service/api';
 import { Action } from '../Actions';
 import { BreadcrumbType, RemoteActionTypes } from './types';
-import httpClient from '../../service';
-import { IImage } from '../../entities/image';
+import { ITaskImage } from '../../entities/image';
+import axios from 'axios';
 
-export function getOriginalImage(img: IImage) {
+export function getOriginalImage(img: ITaskImage) {
   return async (dispatch) => {
     try {
-      const res = await httpClient.get(img.originalFileUrl, { responseType: 'blob' });
-      const file = new File([res.data], img.fileName);
-      dispatch({ type: Action.FETCHING_ORIGINAL_IMAGE_SUCCESSFULLY, payload: { file, id: img.id } });
+      const res = await axios.get(`${img.path}`, { responseType: 'blob', withCredentials: true });
+      const file = new File([res.data], img.url);
+      dispatch({ type: Action.FETCHING_ORIGINAL_IMAGE_SUCCESSFULLY, payload: { file, id: img.attSeq } });
     } catch (e) {
       // tslint:disable-next-line:no-console
       console.log(e);
@@ -28,6 +28,25 @@ export function getImageFromDb(id?: number) {
         }
       });
 
+    } catch (e) {
+      // tslint:disable-next-line:no-console
+      console.log(e);
+    } finally {
+      dispatch({ type: Action.FETCHING_IMAGES_LOADING, payload: { isLoading: false } });
+    }
+  };
+}
+
+export function getTaskImages(data: TaskImageQuery) {
+  return async (dispatch) => {
+    try {
+      dispatch({ type: Action.FETCHING_IMAGES_LOADING, payload: { isLoading: true } });
+      const res = await api.getTaskImages(data);
+      dispatch({
+        type: Action.SUCCESSFULLY_FETCHING_IMAGES, payload: {
+          data: res.data
+        }
+      });
     } catch (e) {
       // tslint:disable-next-line:no-console
       console.log(e);

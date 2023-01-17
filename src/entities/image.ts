@@ -15,3 +15,13 @@ export interface IImage {
   width: number,
   height: number
 }
+
+export interface ITaskImage {
+  name: string,
+  size: number,
+  path: string,
+  url: string,
+  status: string,
+  dtlSeq: number,
+  attSeq: number,
+}

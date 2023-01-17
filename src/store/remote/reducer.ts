@@ -5,10 +5,7 @@ const initialState: RemoteState = {
   images: {},
   breadcrumb: [],
   loading: false,
-  data: {
-    images: [],
-    catalogs: []
-  }
+  data: []
 };
 
 export function remoteReducer(
@@ -44,10 +41,7 @@ export function remoteReducer(
       return {
         ...state,
         images: {},
-        data: {
-          images: [],
-          catalogs: []
-        },
+        data: [],
         breadcrumb: []
       };
     default:

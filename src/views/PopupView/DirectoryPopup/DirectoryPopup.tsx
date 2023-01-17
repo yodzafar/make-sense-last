@@ -1,24 +1,52 @@
-import LoadImagesFromDb from '../../../components/LoadImagesFromDb';
-import { GenericYesNoPopup } from '../GenericYesNoPopup/GenericYesNoPopup';
-import React, { useCallback } from 'react';
-import { AppState } from '../../../store';
+import { useCallback, useMemo } from 'react';
 import { connect } from 'react-redux';
-import { PopupActions } from '../../../logic/actions/PopupActions';
-import './DirectoryPopup.scss';
-import { updateActivePopupType } from '../../../store/general/actionCreators';
+import LoadTaskImages from '../../../components/LoadTaskImages';
 import { PopupWindowType } from '../../../data/enums/PopupWindowType';
+import { PopupActions } from '../../../logic/actions/PopupActions';
+import { AppState } from '../../../store';
+import { updateActivePopupType } from '../../../store/general/actionCreators';
 import { resetRemoteState } from '../../../store/remote/actionCreators';
+import { GenericYesNoPopup } from '../GenericYesNoPopup/GenericYesNoPopup';
+import './DirectoryPopup.scss';
+import { ImageData } from '../../../store/labels/types';
+import { ImageDataUtil } from '../../../utils/ImageDataUtil';
+import { addImageData, updateActiveImageIndex } from '../../../store/labels/actionCreators';
 
 interface IProps {
   selectedImage: { [key: string]: File };
+  addImage: (imageData: ImageData[]) => void;
+  changeActiveImageIndex: (x: number) => void;
+  activeImageIndex: number | null;
   updatePopupType: (type: PopupWindowType) => void;
   reset: () => void;
+  images: ImageData[];
 }
 
-const DirectoryPopup = ({ selectedImage, updatePopupType, reset }: IProps) => {
-  const onAccept = useCallback(() => {
-    updatePopupType(PopupWindowType.IMPORT_IMAGES);
-  }, []);
+const DirectoryPopup = ({ selectedImage, reset, addImage, activeImageIndex, changeActiveImageIndex, images }: IProps) => {
+
+  const filesLength = useMemo(
+    () => Object.values(selectedImage).length,
+    [selectedImage]
+  );
+  const onAccept = () => {
+    if (filesLength > 0) {
+      const tmp: ImageData[] = [];
+      // tslint:disable-next-line:forin
+      for (const key in selectedImage) {
+        if (images.findIndex((item) => item.id === key) === -1) {
+          tmp.push(
+            ImageDataUtil.createImageDataFromFileData(selectedImage[key], key)
+          );
+        }
+      }
+      addImage(tmp);
+      if (activeImageIndex === null) {
+        changeActiveImageIndex(0);
+      }
+      reset();
+      PopupActions.close();
+    }
+  };
 
   const onReject = useCallback(() => {
     PopupActions.close();
@@ -27,7 +55,7 @@ const DirectoryPopup = ({ selectedImage, updatePopupType, reset }: IProps) => {
 
   const renderContent = () => (
     <div className='Directory'>
-      <LoadImagesFromDb />
+      <LoadTaskImages />
     </div>
   );
 
@@ -47,11 +75,15 @@ const DirectoryPopup = ({ selectedImage, updatePopupType, reset }: IProps) => {
 
 const mapDispatchToProps = {
   updatePopupType: updateActivePopupType,
-  reset: resetRemoteState
+  reset: resetRemoteState,
+  addImage: addImageData,
+  changeActiveImageIndex: updateActiveImageIndex,
 };
 
 const mapStateToProps = (state: AppState) => ({
-  selectedImage: state.remote.images
+  selectedImage: state.remote.images,
+  activeImageIndex: state.labels.activeImageIndex,
+  images: state.labels.imagesData,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(DirectoryPopup);

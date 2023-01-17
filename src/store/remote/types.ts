@@ -1,5 +1,5 @@
 import { Action } from '../Actions';
-import { ICatalog, IImage } from '../../entities/image';
+import { ICatalog, IImage, ITaskImage } from '../../entities/image';
 
 export enum RemoteClearType {
   images = 'images',
@@ -16,19 +16,13 @@ export type RemoteState = {
   images: { [key: string]: File }
   breadcrumb: BreadcrumbType[],
   loading: boolean,
-  data: {
-    images: IImage[],
-    catalogs: ICatalog[]
-  }
+  data: ITaskImage[]
 };
 
 interface FetchImageSuccess {
   type: typeof Action.SUCCESSFULLY_FETCHING_IMAGES;
   payload: {
-    data: {
-      images: IImage[],
-      catalogs: ICatalog[]
-    };
+    data: ITaskImage[]
   };
 }
 
