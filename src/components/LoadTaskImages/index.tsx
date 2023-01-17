@@ -57,7 +57,7 @@ const LoadTaskImages = (
                   onClick={() => onClickImage(item)}
                 >
                   <div className='data-item-image'>
-                    <img src={item.path} alt={item.name} />
+                    <img src={item.url} alt={item.name} />
                   </div>
                   <div>
                     <h6>{truncateString(item.name, 35)}</h6>

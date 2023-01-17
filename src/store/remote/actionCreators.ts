@@ -7,7 +7,7 @@ import axios from 'axios';
 export function getOriginalImage(img: ITaskImage) {
   return async (dispatch) => {
     try {
-      const res = await axios.get(img.path, { responseType: 'blob'});
+      const res = await axios.get(img.url, { responseType: 'blob'});
       const file = new File([res.data], img.url);
       dispatch({ type: Action.FETCHING_ORIGINAL_IMAGE_SUCCESSFULLY, payload: { file, id: img.attSeq } });
     } catch (e) {
