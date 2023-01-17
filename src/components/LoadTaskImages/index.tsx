@@ -28,7 +28,7 @@ const LoadTaskImages = (
   }: IProps) => {
 
   const onClickImage = useCallback((item: ITaskImage) => {
-    if (selectedImage[item.dtlSeq]) {
+    if (selectedImage[item.attSeq]) {
       const p = { ...selectedImage };
       delete p[item.attSeq];
       updateSelectedFile(p);
