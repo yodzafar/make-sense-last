@@ -13,9 +13,9 @@ import { RectLabelDbExporter } from '../../../logic/export-db/RectLabelDbExporte
 import { PointLabelDbExporter } from '../../../logic/export-db/PointLabelDbExporter';
 import { PolygonLabelDbExporter } from '../../../logic/export-db/PolygonLabelDbExporter';
 import { LineLabelDbExport } from '../../../logic/export-db/LineLabelDbExport';
-import httpClient from '../../../service';
 import { submitNewNotification } from '../../../store/notifications/actionCreators';
 import { INotification } from '../../../store/notifications/types';
+import httpClient from '../../../service';
 import { NotificationUtil } from '../../../utils/NotificationUtil';
 import { NotificationsDataMap } from '../../../data/info/NotificationsData';
 import { Notification } from '../../../data/enums/Notification';
@@ -30,10 +30,10 @@ const ExportLabelsDbPopup = ({ submitNewNotificationAction }: IProps) => {
 
   const renderContent = () => {
     return (
-      <div className='ExportDbWrapper'>
-        <Grid container justifyContent='center' spacing={3}>
+      <div className="ExportDbWrapper">
+        <Grid container justifyContent="center" spacing={3}>
           <Grid item xs={12}>
-            <div className='Message'>
+            <div className="Message">
               Select label type to export labels.
             </div>
           </Grid>
@@ -42,8 +42,8 @@ const ExportLabelsDbPopup = ({ submitNewNotificationAction }: IProps) => {
               <Grid xs={5} item key={label.labelType}>
                 <Stack
                   spacing={1}
-                  direction='row'
-                  alignItems='center'
+                  direction="row"
+                  alignItems="center"
                   onClick={() => setLabelType(label.labelType)}
                 >
                   <ImageButton
@@ -80,24 +80,43 @@ const ExportLabelsDbPopup = ({ submitNewNotificationAction }: IProps) => {
     }
   }, [labelType]);
 
+  // const onAccept = useCallback(async () => {
+  //   const { data, param } = getExportData();
+  //   setLoading(true);
+  //   httpClient.post('/api/main', data, { params: { type: param } })
+  //     .then(() => {
+  //       submitNewNotificationAction(NotificationUtil
+  //         .createMessageNotification(NotificationsDataMap[Notification.SUCCESSFUL_EXPORTED_ANNOTATION]));
+  //       PopupActions.close();
+  //     })
+  //     .catch(e => {
+  //       submitNewNotificationAction(NotificationUtil
+  //         .createErrorNotification(NotificationsDataMap[Notification.UNSUCCESSFUL_EXPORTED_ANNOTATION]));
+  //     })
+  //     .finally(() => {
+  //       setLoading(false);
+  //     });
+  // }, [getExportData]);
+
   const onAccept = useCallback(async () => {
-    const { data, param } = getExportData();
-    setLoading(true);
-    httpClient.post('/api/main', data, { params: { type: param } })
-      .then(() => {
+    const data = RectLabelDbExporter.getRectData();
+    if(data.length > 0) {
+      try {
+        setLoading(true);
+        await httpClient.post('/api/save', data, {params: {dtlSeq: 1}});
         submitNewNotificationAction(NotificationUtil
           .createMessageNotification(NotificationsDataMap[Notification.SUCCESSFUL_EXPORTED_ANNOTATION]));
         PopupActions.close();
-      })
-      .catch(e => {
-        console.log(e.response.data);
+      } catch (e) {
+        // tslint:disable-next-line:no-console
+        console.log(e);
         submitNewNotificationAction(NotificationUtil
           .createErrorNotification(NotificationsDataMap[Notification.UNSUCCESSFUL_EXPORTED_ANNOTATION]));
-      })
-      .finally(() => {
+      } finally {
         setLoading(false);
-      });
-  }, [getExportData]);
+      }
+    }
+  }, []);
 
   const onReject = useCallback(() => {
     PopupActions.close();

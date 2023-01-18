@@ -36,3 +36,15 @@ export type ExportDbObject = {
   categories: ExportDbCategory[]
 }
 
+export type ExportDbRectangle = {
+  attSeq: number,
+  labelName: string,
+  labelOrder: number,
+  bboxX: number,
+  bboxY: number,
+  bboxWidth: number,
+  bboxHeight: number,
+  imgWidth: number,
+  imgHeight: number
+}
+

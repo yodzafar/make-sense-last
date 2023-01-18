@@ -1,15 +1,43 @@
 import { ImageData, LabelName } from '../../store/labels/types';
 import { LabelsSelector } from '../../store/selectors/LabelsSelector';
 import { ExportDbBase } from './ExportDbBase';
-import { ExportDbAnnotation, ExportDbObject } from './types';
+import { ExportDbAnnotation, ExportDbObject, ExportDbRectangle } from './types';
 import { LabelDataMap } from '../export/polygon/COCOExporter';
 import { flatten } from 'lodash';
+import { ImageRepository } from '../imageRepository/ImageRepository';
 
 export class RectLabelDbExporter {
   public static export = () => {
     const imagesData: ImageData[] = LabelsSelector.getImagesData();
     const labelNames: LabelName[] = LabelsSelector.getLabelNames();
-    return this.mapImagesData(imagesData, labelNames)
+    return this.mapImagesData(imagesData, labelNames);
+  };
+
+  public static getRectData = (): ExportDbRectangle[] => {
+    const tmp: ExportDbRectangle[] = [];
+    const imagesData: ImageData[] = LabelsSelector.getImagesData().filter(item => item.labelRects.length > 0);
+    const labelNames: LabelName[] = LabelsSelector.getLabelNames();
+    for (const item of imagesData) {
+      const image: HTMLImageElement = ImageRepository.getById(item.id);
+      const arr = item.labelRects;
+      for (const label of arr) {
+        const labelData = labelNames.find((x) => x.id === label.labelId)
+        if(labelData) {
+          tmp.push(({
+            imgHeight: image.height,
+            imgWidth: image.width,
+            bboxX: label.rect.x,
+            bboxY: label.rect.y,
+            bboxWidth: label.rect.width,
+            bboxHeight: label.rect.height,
+            attSeq: Number(item.id),
+            labelName: labelNames.find(item => item.id === label.labelId)?.name || '',
+            labelOrder: 0,
+          }));
+        }
+      }
+    }
+    return tmp;
   };
 
   public static mapImagesData(
