@@ -30,10 +30,10 @@ const ExportLabelsDbPopup = ({ submitNewNotificationAction }: IProps) => {
 
   const renderContent = () => {
     return (
-      <div className="ExportDbWrapper">
-        <Grid container justifyContent="center" spacing={3}>
+      <div className='ExportDbWrapper'>
+        <Grid container justifyContent='center' spacing={3}>
           <Grid item xs={12}>
-            <div className="Message">
+            <div className='Message'>
               Select label type to export labels.
             </div>
           </Grid>
@@ -42,8 +42,8 @@ const ExportLabelsDbPopup = ({ submitNewNotificationAction }: IProps) => {
               <Grid xs={5} item key={label.labelType}>
                 <Stack
                   spacing={1}
-                  direction="row"
-                  alignItems="center"
+                  direction='row'
+                  alignItems='center'
                   onClick={() => setLabelType(label.labelType)}
                 >
                   <ImageButton
@@ -64,21 +64,21 @@ const ExportLabelsDbPopup = ({ submitNewNotificationAction }: IProps) => {
       </div>
     );
   };
-
-  const getExportData = useCallback((): { data: ExportDbObject, param: string } => {
-    switch (labelType) {
-      case LabelType.POINT:
-        return { data: PointLabelDbExporter.export(), param: 'POINT' };
-      case LabelType.RECT:
-        return { data: RectLabelDbExporter.export(), param: 'RECTANGLE' };
-      case LabelType.POLYGON:
-        return { data: PolygonLabelDbExporter.export(), param: 'POLYGON' };
-      case LabelType.LINE:
-        return { data: LineLabelDbExport.export(), param: 'LINE' };
-      default:
-        return { data: RectLabelDbExporter.export(), param: 'RECTANGLE' };
-    }
-  }, [labelType]);
+  //
+  // const getExportData = useCallback((): { data: ExportDbObject, param: string } => {
+  //   switch (labelType) {
+  //     case LabelType.POINT:
+  //       return { data: PointLabelDbExporter.export(), param: 'POINT' };
+  //     case LabelType.RECT:
+  //       return { data: RectLabelDbExporter.export(), param: 'RECTANGLE' };
+  //     case LabelType.POLYGON:
+  //       return { data: PolygonLabelDbExporter.export(), param: 'POLYGON' };
+  //     case LabelType.LINE:
+  //       return { data: LineLabelDbExport.export(), param: 'LINE' };
+  //     default:
+  //       return { data: RectLabelDbExporter.export(), param: 'RECTANGLE' };
+  //   }
+  // }, [labelType]);
 
   // const onAccept = useCallback(async () => {
   //   const { data, param } = getExportData();
@@ -100,10 +100,10 @@ const ExportLabelsDbPopup = ({ submitNewNotificationAction }: IProps) => {
 
   const onAccept = useCallback(async () => {
     const data = RectLabelDbExporter.getRectData();
-    if(data.length > 0) {
+    if (data.length > 0) {
       try {
         setLoading(true);
-        await httpClient.post('/api/save', data, {params: {dtlSeq: 1}});
+        await httpClient.post('/api/save', data, { params: { dtlSeq: 1 } });
         submitNewNotificationAction(NotificationUtil
           .createMessageNotification(NotificationsDataMap[Notification.SUCCESSFUL_EXPORTED_ANNOTATION]));
         PopupActions.close();

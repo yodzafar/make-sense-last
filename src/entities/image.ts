@@ -25,3 +25,25 @@ export interface ITaskImage {
   dtlSeq: number,
   attSeq: number,
 }
+
+export interface YoloDTOS {
+  labelOrder: number,
+  yolo1: number,
+  yolo2: number,
+  yolo3: number,
+  yolo4: number
+}
+
+export interface IAnnotation {
+  attSeq: number,
+  vrifysttus: string,
+  loginId: string,
+  qcId: string,
+  'yoloDTOS': YoloDTOS[]
+}
+
+export interface ILabelOrder {
+  labelName: string,
+  labelSeq: number,
+  labelOrder: number
+}

@@ -13,6 +13,7 @@ import { updateActiveLabelType, updateImageData, updateLabelNames } from '../../
 import { ImporterSpecData } from '../../../data/ImporterSpecData';
 import { AnnotationFormatType } from '../../../data/enums/AnnotationFormatType';
 import { ILabelFormatData } from '../../../interfaces/ILabelFormatData';
+import { YOLOImporter } from '../../../logic/import/yolo/YOLOImporter';
 
 interface IProps {
   activeLabelType: LabelType,
@@ -68,7 +69,10 @@ const ImportLabelPopup: React.FC<IProps> = (
     multiple: true,
     onDrop: (acceptedFiles) => {
       const importer = new (ImporterSpecData[formatType])([labelType]);
-      importer.import(acceptedFiles, onAnnotationLoadSuccess, onAnnotationsLoadFailure);
+      const yoloImporter = new YOLOImporter([LabelType.RECT])
+      console.log(acceptedFiles);
+      yoloImporter.import(acceptedFiles, onAnnotationLoadSuccess, onAnnotationsLoadFailure)
+      // importer.import(acceptedFiles, onAnnotationLoadSuccess, onAnnotationsLoadFailure);
     }
   });
 

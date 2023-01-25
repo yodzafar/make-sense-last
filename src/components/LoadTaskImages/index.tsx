@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
 import { AppState } from 'src/store';
-import { getOriginalImage, getTaskImages, updateSelectedImage } from '../../store/remote/actionCreators';
+import { getOriginalImage, updateSelectedImage } from '../../store/remote/actionCreators';
 import { ITaskImage } from '../../entities/image';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { Box, CircularProgress, Grid } from '@mui/material';
 import { truncateString } from '../../utils/StringUtil';
 import cn from 'classnames';
@@ -10,7 +10,6 @@ import './style.scss';
 
 interface IProps {
   selectedImage: { [key: string]: File };
-  getImages: (TaskImageQuery) => void;
   imageList: ITaskImage[];
   getOriginalImg: (img: ITaskImage) => void;
   updateSelectedFile: (files: { [key: string]: File }) => void;
@@ -19,7 +18,6 @@ interface IProps {
 
 const LoadTaskImages = (
   {
-    getImages,
     isLoading,
     imageList,
     selectedImage,
@@ -37,13 +35,6 @@ const LoadTaskImages = (
     }
   }, [selectedImage]);
 
-  useEffect(() => {
-    getImages({
-      userId: 'yanghee',
-      qcCheck: true,
-      dtlSeq: 1
-    });
-  }, []);
 
   return <div className='ImageFromDbWrapper'>
     {
@@ -83,7 +74,6 @@ const LoadTaskImages = (
 };
 
 const mapDispatchToProps = {
-  getImages: getTaskImages,
   getOriginalImg: getOriginalImage,
   updateSelectedFile: updateSelectedImage
 };

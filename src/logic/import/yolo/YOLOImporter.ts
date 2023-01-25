@@ -38,6 +38,7 @@ export class YOLOImporter extends AnnotationImporter {
                     const [labelNames, , annotationsRaw] = values;
                     const resultImageData = zip<ImageData, string>(relevantImageData, annotationsRaw)
                         .map((pair: [ImageData, string]) => YOLOImporter.applyAnnotations(pair[0], pair[1], labelNames))
+                    // tslint:disable-next-line:max-line-length
                     onSuccess(YOLOImporter.injectImageDataWithAnnotations(sourceImagesData, resultImageData), labelNames);
                 })
                 .catch((error: Error) => onFailure(error))

@@ -12,7 +12,8 @@ export class LabelUtil {
         return {
             id: uuidv4(),
             name,
-            color: sample(Settings.LABEL_COLORS_PALETTE)
+            color: sample(Settings.LABEL_COLORS_PALETTE),
+            description: ''
         }
     }
 

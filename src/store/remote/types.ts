@@ -1,5 +1,5 @@
 import { Action } from '../Actions';
-import { ICatalog, IImage, ITaskImage } from '../../entities/image';
+import { IAnnotation, ILabelOrder, ITaskImage } from '../../entities/image';
 
 export enum RemoteClearType {
   images = 'images',
@@ -17,6 +17,8 @@ export type RemoteState = {
   breadcrumb: BreadcrumbType[],
   loading: boolean,
   data: ITaskImage[]
+  annotation: IAnnotation[]
+  labelFile: File | null
 };
 
 interface FetchImageSuccess {
@@ -63,6 +65,16 @@ interface ResetRemoteState {
   type: typeof Action.RESET_REMOTE_STATE,
 }
 
+interface ImportAnnotation {
+  type: Action.IMPORT_ANNOTATION,
+  payload: IAnnotation[]
+}
+
+interface GetLabelOrder {
+  type: Action.FETCH_LABEL_ORDER,
+  payload: File
+}
+
 export type RemoteActionTypes =
   | ResetRemoteState
   | FetchImageSuccess
@@ -71,5 +83,7 @@ export type RemoteActionTypes =
   | StartFetchingOriginalImage
   | FetchingOriginalImageSuccess
   | UpdateSelectedImage
+  | ImportAnnotation
+  | GetLabelOrder
 
 

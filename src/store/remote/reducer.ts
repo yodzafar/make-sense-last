@@ -4,8 +4,11 @@ import { Action } from '../Actions';
 const initialState: RemoteState = {
   images: {},
   breadcrumb: [],
+  // annotations: [],
   loading: false,
-  data: []
+  data: [],
+  annotation: [],
+  labelFile: null
 };
 
 export function remoteReducer(
@@ -37,6 +40,16 @@ export function remoteReducer(
         ...state,
         images: action.payload
       };
+    case Action.IMPORT_ANNOTATION:
+      return {
+        ...state,
+        annotation: action.payload
+      };
+    case Action.FETCH_LABEL_ORDER:
+      return {
+        ...state,
+        labelFile: action.payload
+      }
     case Action.RESET_REMOTE_STATE:
       return {
         ...state,

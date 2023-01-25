@@ -8,9 +8,21 @@ import { updateActivePopupType } from '../../../store/general/actionCreators';
 import { resetRemoteState } from '../../../store/remote/actionCreators';
 import { GenericYesNoPopup } from '../GenericYesNoPopup/GenericYesNoPopup';
 import './DirectoryPopup.scss';
-import { ImageData } from '../../../store/labels/types';
+import { ImageData, LabelName } from '../../../store/labels/types';
 import { ImageDataUtil } from '../../../utils/ImageDataUtil';
-import { addImageData, updateActiveImageIndex } from '../../../store/labels/actionCreators';
+import {
+  addImageData,
+  updateActiveImageIndex,
+  updateActiveLabelId,
+  updateActiveLabelType,
+  updateImageData,
+  updateLabelNames
+} from '../../../store/labels/actionCreators';
+import { IAnnotation, ITaskImage } from '../../../entities/image';
+import httpClient from '../../../service';
+import axios from 'axios';
+import { YOLOImporter } from '../../../logic/import/yolo/YOLOImporter';
+import { LabelType } from '../../../data/enums/LabelType';
 
 interface IProps {
   selectedImage: { [key: string]: File };
@@ -20,14 +32,66 @@ interface IProps {
   updatePopupType: (type: PopupWindowType) => void;
   reset: () => void;
   images: ImageData[];
+  annotation: IAnnotation[];
+  changeActiveLabelId: (activeLabelId: string) => void;
+  remoteImage: ITaskImage[]
+  labelFile: File | null,
+  updateImageDataAction: (imageData: ImageData[]) => void,
+  updateLabelNamesAction: (labels: LabelName[]) => void,
+  updateActiveLabelTypeAction: (activeLabelType: LabelType) => void;
 }
 
-const DirectoryPopup = ({ selectedImage, reset, addImage, activeImageIndex, changeActiveImageIndex, images }: IProps) => {
+const DirectoryPopup = (
+  {
+    selectedImage,
+    addImage,
+    activeImageIndex,
+    changeActiveImageIndex,
+    images,
+    remoteImage,
+    labelFile,
+    updateImageDataAction,
+    updateLabelNamesAction,
+    updateActiveLabelTypeAction
+  }: IProps
+) => {
 
   const filesLength = useMemo(
     () => Object.values(selectedImage).length,
     [selectedImage]
   );
+
+  const onSuccessCallback = (imagesData: ImageData[], labelNames: LabelName[]) => {
+    updateImageDataAction(imagesData);
+    updateLabelNamesAction(labelNames);
+    updateActiveLabelTypeAction(LabelType.RECT);
+  };
+
+  const getAnnotations = async (ids: string[]) => {
+
+    try {
+      const requests = ids.map((attSeq) => httpClient.get<Blob>(
+        `/api/create-file-for-import-annotation/${attSeq}`,
+        { responseType: 'blob' }));
+      const res = await axios.all(requests);
+      const tmp: File[] = [];
+      for (const item of res) {
+        const imgId = item.config.url.match(/\/(\d+)+\/?/g).map((id) => id.replace(/\//g, ''))[0];
+        const img = remoteImage.find((imgItem) => String(imgItem.attSeq) === imgId);
+        if (img) {
+          tmp.push(new File([item.data], `${img.name.split('.').slice(0, -1).join('.')}.txt`));
+        }
+      }
+      if (tmp.length > 0 && labelFile) {
+        const yoloImporter = new YOLOImporter([LabelType.RECT]);
+        yoloImporter.import([...tmp, labelFile], onSuccessCallback, () => {})
+      }
+    } catch (e) {
+      // tslint:disable-next-line:no-console
+      console.log(e);
+    }
+  };
+
   const onAccept = () => {
     if (filesLength > 0) {
       const tmp: ImageData[] = [];
@@ -35,22 +99,21 @@ const DirectoryPopup = ({ selectedImage, reset, addImage, activeImageIndex, chan
       for (const key in selectedImage) {
         if (images.findIndex((item) => item.id === key) === -1) {
           tmp.push(
-            ImageDataUtil.createImageDataFromFileData(selectedImage[key], key)
+            { ...ImageDataUtil.createImageDataFromFileData(selectedImage[key], key) }
           );
         }
       }
+      getAnnotations(tmp.map(item => item.id));
       addImage(tmp);
       if (activeImageIndex === null) {
         changeActiveImageIndex(0);
       }
-      reset();
       PopupActions.close();
     }
   };
 
   const onReject = useCallback(() => {
     PopupActions.close();
-    reset();
   }, []);
 
   const renderContent = () => (
@@ -78,12 +141,19 @@ const mapDispatchToProps = {
   reset: resetRemoteState,
   addImage: addImageData,
   changeActiveImageIndex: updateActiveImageIndex,
+  changeActiveLabelId: updateActiveLabelId,
+  updateImageDataAction: updateImageData,
+  updateLabelNamesAction: updateLabelNames,
+  updateActiveLabelTypeAction: updateActiveLabelType
 };
 
 const mapStateToProps = (state: AppState) => ({
   selectedImage: state.remote.images,
   activeImageIndex: state.labels.activeImageIndex,
   images: state.labels.imagesData,
+  annotation: state.remote.annotation,
+  remoteImage: state.remote.data,
+  labelFile: state.remote.labelFile
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(DirectoryPopup);

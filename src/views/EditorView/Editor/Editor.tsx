@@ -177,6 +177,7 @@ class Editor extends React.Component<IProps, IState> {
     if (this.props.imageDragMode) {
       EditorModel.viewPortHelper.update(editorData);
     } else {
+      // tslint:disable-next-line:no-unused-expression
       EditorModel.supportRenderingEngine &&
       EditorModel.supportRenderingEngine.update(editorData);
     }
