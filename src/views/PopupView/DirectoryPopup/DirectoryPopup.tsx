@@ -109,7 +109,7 @@ const DirectoryPopup = (
           );
         }
       }
-      getAnnotations(tmp.map(item => item.id));
+      getAnnotations(tmp.filter(item => item.status !== 'UNDONE').map(item => item.id));
       addImage(tmp);
       if (activeImageIndex === null) {
         changeActiveImageIndex(0);
