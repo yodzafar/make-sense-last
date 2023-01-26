@@ -7,12 +7,15 @@ import { IRect } from '../../../../interfaces/IRect';
 import { ISize } from '../../../../interfaces/ISize';
 import { ImageRepository } from '../../../../logic/imageRepository/ImageRepository';
 import { AppState } from '../../../../store';
-import { updateImageDataById } from '../../../../store/labels/actionCreators';
+import { updateImageDataById, updateImageStatus } from '../../../../store/labels/actionCreators';
 import { ImageData } from '../../../../store/labels/types';
 import { FileUtil } from '../../../../utils/FileUtil';
 import { RectUtil } from '../../../../utils/RectUtil';
 import './ImagePreview.scss';
 import { CSSHelper } from '../../../../logic/helpers/CSSHelper';
+import { getUrlParam } from '../../../../hooks/useUrlParams';
+import { TaskImageStatus } from '../../../../entities/image';
+import { QueryParamEnum } from '../../../../data/QueryParam';
 
 interface IProps {
   imageData: ImageData;
@@ -22,7 +25,8 @@ interface IProps {
   isChecked?: boolean;
   onClick?: () => any;
   isSelected?: boolean;
-  updateImageDataById: (id: string, newImageData: ImageData) => any;
+  updateImageDataById: (id: string, newImageData: ImageData) => void;
+  updateImageStatus: (dtlSeq: string, loginId: string, qcId: string, image: ImageData, status: TaskImageStatus) => void;
 }
 
 interface IState {
@@ -58,14 +62,14 @@ class ImagePreview extends React.Component<IProps, IState> {
     }
   }
 
-  shouldComponentUpdate(nextProps: Readonly<IProps>, nextState: Readonly<IState>, nextContext: any): boolean {
-    return (
-      this.props.imageData.id !== nextProps.imageData.id ||
-      this.state.image !== nextState.image ||
-      this.props.isSelected !== nextProps.isSelected ||
-      this.props.isChecked !== nextProps.isChecked
-    );
-  }
+  // shouldComponentUpdate(nextProps: Readonly<IProps>, nextState: Readonly<IState>, nextContext: any): boolean {
+  //   return (
+  //     // this.props.imageData.id !== nextProps.imageData.id ||
+  //     this.state.image !== nextState.image ||
+  //     this.props.isSelected !== nextProps.isSelected ||
+  //     this.props.isChecked !== nextProps.isChecked
+  //   );
+  // }
 
   private loadImage = async (imageData: ImageData, isScrolling: boolean) => {
     if (imageData.loadStatus) {
@@ -98,8 +102,8 @@ class ImagePreview extends React.Component<IProps, IState> {
     const containerRect: IRect = {
       x: 0.15 * size.width,
       y: 0.15 * size.height,
-      width: 0.7 * size.width,
-      height: 0.7 * size.height
+      width: 0.75 * size.width,
+      height: 0.75 * size.height
     };
 
     const imageRect: IRect = {
@@ -121,6 +125,20 @@ class ImagePreview extends React.Component<IProps, IState> {
   };
 
   private handleLoadImageError = () => {
+    // 111
+  };
+  handleEditStatus = (status: TaskImageStatus) => {
+    const image = this.props.imageData;
+    const queryData = getUrlParam();
+    // const dtlSeq = queryData[QueryParamEnum.DtlSeq] || '1';
+    // const userId = queryData[QueryParamEnum.UserID] || 'yanghee';
+    // const qcID = queryData[QueryParamEnum.qsID] || 'kdatalabcloud';
+    const dtlSeq = queryData[QueryParamEnum.DtlSeq];
+    const userId = queryData[QueryParamEnum.UserID];
+    const qcID = queryData[QueryParamEnum.qsID];
+    this.props.updateImageStatus(dtlSeq, userId, qcID, image, status);
+
+    // this.props.updateImageDataById(this.props.imageData.id, { ...this.props.imageData, status });
   };
 
   private getClassName = () => {
@@ -139,6 +157,10 @@ class ImagePreview extends React.Component<IProps, IState> {
       onClick
     } = this.props;
 
+    const urlData = getUrlParam();
+    const qcID = urlData.qcID || 'kdatalabcloud';
+    const imageData = this.props.imageData;
+
     return (
       <div
         className={this.getClassName()}
@@ -150,27 +172,43 @@ class ImagePreview extends React.Component<IProps, IState> {
             <div
               className='Foreground'
               key={'Foreground'}
-              style={this.getStyle()}
+              // style={this.getStyle()}
             >
-              <img
-                className='Image'
-                draggable={false}
-                src={this.state.image.src}
-                alt={this.state.image.alt}
-                style={{ ...this.getStyle(), left: 0, top: 0 }}
-              />
-              {isChecked && <img
-                className='CheckBox'
-                draggable={false}
-                src={'ico/ok.png'}
-                alt={'checkbox'}
-              />}
-            </div>,
-            <div
-              className='Background'
-              key={'Background'}
-              style={this.getStyle()}
-            />
+              <div className='ImageWrapper'>
+                <img
+                  className='Image'
+                  draggable={false}
+                  src={this.state.image.src}
+                  alt={this.state.image.alt}
+                  // style={{ ...this.getStyle(), left: 0, top: 0 }}
+                />
+                <div
+                  className='Background'
+                  key={'Background'}
+                  // style={this.getStyle()}
+                />
+                {isChecked && <img
+                  className='CheckBox'
+                  draggable={false}
+                  src={'ico/ok.png'}
+                  alt={'checkbox'}
+                />}
+              </div>
+              {
+                qcID && qcID === imageData.adminID && imageData.status !== 'APPROVED' && (
+                  <div className='Image-buttons'>
+                    <button onClick={() => this.handleEditStatus('APPROVED')} className='primary'>approve</button>
+                    <button onClick={() => this.handleEditStatus('REJECTED')} className='danger'>reject</button>
+                  </div>
+                )
+              }
+
+            </div>
+            // <div
+            //   className='Background'
+            //   key={'Background'}
+            //   // style={this.getStyle()}
+            // />
           ] :
           <ClipLoader
             size={30}
@@ -182,7 +220,8 @@ class ImagePreview extends React.Component<IProps, IState> {
 }
 
 const mapDispatchToProps = {
-  updateImageDataById
+  updateImageDataById,
+  updateImageStatus
 };
 
 const mapStateToProps = (state: AppState) => ({});

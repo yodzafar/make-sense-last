@@ -16,14 +16,18 @@ export interface IImage {
   height: number
 }
 
+export type TaskImageStatus = 'UNCHECKED' | 'UNDONE' | 'APPROVED' | 'REJECTED' | 'REWORKED';
+
 export interface ITaskImage {
   name: string,
   size: number,
   path: string,
   url: string,
-  status: string,
+  status: TaskImageStatus,
   dtlSeq: number,
   attSeq: number,
+  userId?: string,
+  qcId: string
 }
 
 export interface YoloDTOS {

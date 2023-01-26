@@ -7,6 +7,8 @@ import { updatePreventCustomCursorStatus } from '../../../../store/general/actio
 import { AppState } from '../../../../store';
 import { connect } from 'react-redux';
 import { ImageActionType } from '../../../../store/general/types';
+import { QueryParamEnum } from '../../../../data/QueryParam';
+import { useUrlParams } from '../../../../hooks/useUrlParams';
 
 interface IProps {
   updatePreventCustomCursorStatusAction: (preventCustomCursor: boolean) => never;
@@ -16,6 +18,8 @@ interface IProps {
 
 const DropDownMenu: React.FC<IProps> = ({ updatePreventCustomCursorStatusAction, imageActionType, isHasImages }) => {
   const topAnchor = 35;
+  const { queryData } = useUrlParams();
+  const qcID = queryData[QueryParamEnum.qsID] || 'kdatalabcloud';
 
   const [activeTabIdx, setActiveTabIdx] = useState(null);
   const [activeDropDownAnchor, setDropDownAnchor] = useState(null);
@@ -106,7 +110,7 @@ const DropDownMenu: React.FC<IProps> = ({ updatePreventCustomCursorStatusAction,
       if (!isHasImages) {
         return true;
       }
-      return item.actionType !== imageActionType;
+      return item.actionType !== imageActionType || !!qcID;
     }
     return false;
   };

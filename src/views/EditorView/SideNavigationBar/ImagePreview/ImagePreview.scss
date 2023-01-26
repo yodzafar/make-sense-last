@@ -12,21 +12,65 @@
   align-content: center;
 
   border-bottom: solid 1px $darkThemeFirstColor;
+
   &:nth-child(odd) {
     border-right: solid 1px $darkThemeFirstColor;
   }
 
   .Foreground {
-    position: absolute;
+    position: relative;
     z-index: 100;
-    transition: transform 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .ImageWrapper {
+      display: flex;
+      justify-content: center;
+      position: relative;
+      width: 80%;
+    }
 
     .Image {
-      position: absolute;
+      //position: absolute;
+      width: 100%;
+      height: auto;
       left: 0;
       top: 0;
       border: solid 1px $darkThemeSecondColor;
       user-select: none;
+    }
+
+    .Image-buttons {
+      max-width: 80%;
+      z-index: 200;
+      display: flex;
+      width: 100%;
+      margin-top: 10px;
+
+
+      button {
+        font-size: 12px;
+        flex-grow: 1;
+        margin: 0;
+        width: 50%;
+        border: 0;
+        line-height: 30px;
+        text-transform: capitalize;
+        text-align: center;
+        padding:0;
+        font-weight: 500;
+        color: #222;
+        height: 30px;
+        cursor: pointer;
+
+        &.primary {
+          background-color: #83fac3;
+        }
+        &.danger {
+          background-color: #ef9aa9;
+        }
+      }
     }
 
     .CheckBox {
@@ -34,7 +78,7 @@
       z-index: 1000;
       max-width: 20px;
       max-height: 20px;
-      bottom: -10px;
+      bottom: -5px;
       left: -10px;
       filter: invert(1) brightness(35%) sepia(100%) hue-rotate(172deg) saturate(2000%); // fallback if new css variables are not supported by browser
       filter: invert(1) brightness(35%) sepia(100%) hue-rotate(var(--hue-value)) saturate(2000%);
@@ -43,28 +87,32 @@
 
   .Background {
     position: absolute;
-    z-index: 0;
+    z-index: -1;
+    width: calc(100% - 4px);
+    height: 100%;
     background-color: $darkThemeThirdColor;
     transition: background-color 0.3s ease-in-out, transform 0.3s;
   }
 
   &.selected {
     .Foreground {
-      transform: translate(-2px, 2px);
+      //transform: translate(-px, 2px);
     }
+
     .Background {
-      transform: translate(2px, -2px);
+      transform: translate(6px, -4px);
       background-color: $secondaryColor; // fallback if new css variables are not supported by browser
       background-color: var(--leading-color);
     }
   }
 
   &:hover {
-    .Foreground {
-      transform: translate(-2px, 2px);
-    }
+    //.Foreground {
+    //  transform: translate(-2px, 2px);
+    //}
+
     .Background {
-      transform: translate(2px, -2px);
+      transform: translate(2px, 0px);
     }
   }
 }

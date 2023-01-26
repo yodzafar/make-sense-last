@@ -4,6 +4,7 @@ import { LabelType } from '../../data/enums/LabelType';
 import { IPoint } from '../../interfaces/IPoint';
 import { LabelStatus } from '../../data/enums/LabelStatus';
 import { ILine } from '../../interfaces/ILine';
+import { TaskImageStatus } from '../../entities/image';
 
 export type Annotation = {
   id: string;
@@ -42,6 +43,7 @@ export type LabelName = {
 
 export type ImageData = {
   id: string;
+  adminID?: string
   fileData: File;
   loadStatus: boolean;
   labelRects: LabelRect[];
@@ -49,6 +51,7 @@ export type ImageData = {
   labelLines: LabelLine[];
   labelPolygons: LabelPolygon[];
   labelNameIds: string[];
+  status?: TaskImageStatus
 
   // SSD
   isVisitedByObjectDetector: boolean;

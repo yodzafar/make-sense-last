@@ -17,6 +17,7 @@ export class EmptyArrayError extends Error {
     }
 }
 
+// tslint:disable-next-line:max-classes-per-file
 export class NegativeIndexError extends Error {
     constructor() {
         super('Index can not be negative.');

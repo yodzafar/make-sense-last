@@ -15,7 +15,7 @@ export class RectLabelDbExporter {
 
   public static getRectData = (): ExportDbRectangle[] => {
     const tmp: ExportDbRectangle[] = [];
-    const imagesData: ImageData[] = LabelsSelector.getImagesData().filter(item => item.labelRects.length > 0);
+    const imagesData: ImageData[] = LabelsSelector.getImagesData().filter(item => item.labelRects.length > 0 && item.status !== 'APPROVED');
     const labelNames: LabelName[] = LabelsSelector.getLabelNames();
     for (const item of imagesData) {
       const image: HTMLImageElement = ImageRepository.getById(item.id);

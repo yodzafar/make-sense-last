@@ -19,10 +19,10 @@ import {
   updateLabelNames
 } from '../../../store/labels/actionCreators';
 import { IAnnotation, ITaskImage } from '../../../entities/image';
+import { LabelType } from '../../../data/enums/LabelType';
 import httpClient from '../../../service';
 import axios from 'axios';
 import { YOLOImporter } from '../../../logic/import/yolo/YOLOImporter';
-import { LabelType } from '../../../data/enums/LabelType';
 
 interface IProps {
   selectedImage: { [key: string]: File };
@@ -48,11 +48,11 @@ const DirectoryPopup = (
     activeImageIndex,
     changeActiveImageIndex,
     images,
-    remoteImage,
-    labelFile,
     updateImageDataAction,
     updateLabelNamesAction,
-    updateActiveLabelTypeAction
+    updateActiveLabelTypeAction,
+    remoteImage,
+    labelFile
   }: IProps
 ) => {
 
@@ -84,22 +84,28 @@ const DirectoryPopup = (
       }
       if (tmp.length > 0 && labelFile) {
         const yoloImporter = new YOLOImporter([LabelType.RECT]);
-        yoloImporter.import([...tmp, labelFile], onSuccessCallback, () => {})
+        yoloImporter.import([...tmp, labelFile], onSuccessCallback, () => {
+          // 1
+        });
       }
     } catch (e) {
       // tslint:disable-next-line:no-console
       console.log(e);
     }
   };
-
   const onAccept = () => {
     if (filesLength > 0) {
       const tmp: ImageData[] = [];
-      // tslint:disable-next-line:forin
-      for (const key in selectedImage) {
+       for (const key in selectedImage) {
         if (images.findIndex((item) => item.id === key) === -1) {
+          const remote = remoteImage.find(item => String(item.attSeq) === key);
           tmp.push(
-            { ...ImageDataUtil.createImageDataFromFileData(selectedImage[key], key) }
+            {
+              ...ImageDataUtil.createImageDataFromFileData(selectedImage[key], key), ...(remote ? {
+                adminID: remote.qcId,
+                status: remote.status
+              } : {})
+            }
           );
         }
       }

@@ -17,6 +17,8 @@ import { getTaskImages, importAnnotation, importLabels } from './store/remote/ac
 import { TaskImageQuery } from './service/api';
 import { useUrlParams } from './hooks/useUrlParams';
 import { QueryParamEnum } from './data/QueryParam';
+import { updateActivePopupType } from './store/general/actionCreators';
+import { PopupWindowType } from './data/enums/PopupWindowType';
 
 interface IProps {
   projectType: ProjectType;
@@ -27,6 +29,7 @@ interface IProps {
   getImages: (data: TaskImageQuery) => void;
   getAnnotations: (dtlSeq: string) => void;
   getLabelOrder: (dtlSeq: string) => void;
+  updatePopupType: (type: PopupWindowType) => void;
 }
 
 const App: React.FC<IProps> = (
@@ -40,9 +43,12 @@ const App: React.FC<IProps> = (
     getLabelOrder
   }) => {
   const { queryData } = useUrlParams();
-  const dtlSeq = queryData[QueryParamEnum.DtlSeq] || '1';
-  const userId = queryData[QueryParamEnum.UserID] || 'yanghee';
-  const isAdmin = !!queryData[QueryParamEnum.IsAdmin];
+  // const dtlSeq = queryData[QueryParamEnum.DtlSeq] || '1';
+  // const userId = queryData[QueryParamEnum.UserID] || 'yanghee';
+  // const qcID = queryData[QueryParamEnum.qsID] || 'kdatalabcloud';
+  const dtlSeq = queryData[QueryParamEnum.DtlSeq];
+  const userId = queryData[QueryParamEnum.UserID];
+  const qcID = queryData[QueryParamEnum.qsID];
 
   const selectRoute = () => {
     // if (isAuth) {
@@ -69,29 +75,17 @@ const App: React.FC<IProps> = (
 
   useEffect(() => {
     if (userId && dtlSeq) {
+      // updateActivePopupType(PopupWindowType.DIRECTORY)
       getImages({
         userId,
-        qcCheck: isAdmin,
+        qcCheck: !!qcID,
         dtlSeq
       });
       getAnnotations(dtlSeq);
       getLabelOrder(dtlSeq);
     }
 
-    // const rectX: number = 0.5026041666666666;
-    // const rectY: number = 0.47870370370370374;
-    // const rectWidth: number = 0.15520833333333334;
-    // const rectHeight: number = 0.37962962962962965;
-    // const rect = {
-    //   x: (rectX - rectWidth / 2) * 1980,
-    //   y: (rectY - rectHeight / 2) * 1080,
-    //   width: rectWidth * 1980,
-    //   height: rectHeight * 1080
-    // };
-
-    // console.log(rect);
-    // console.log(LabelUtil.createLabelRect('1', rect));
-  }, [userId, dtlSeq, getAnnotations, getLabelOrder, isAdmin]);
+  }, [userId, dtlSeq, getAnnotations, getLabelOrder, qcID, updateActivePopupType]);
 
   return (
     <div
@@ -110,7 +104,8 @@ const App: React.FC<IProps> = (
 const mapDispatchToProps = {
   getImages: getTaskImages,
   getAnnotations: importAnnotation,
-  getLabelOrder: importLabels
+  getLabelOrder: importLabels,
+  updatePopupType: updateActivePopupType,
 };
 
 const mapStateToProps = (state: AppState) => ({
