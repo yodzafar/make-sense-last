@@ -52,14 +52,12 @@ const LoadFromDb = ({
       if (activeImageIndex === null) {
         changeActiveImageIndex(0);
       }
-      reset();
       PopupActions.close();
     }
   };
 
   const onReject = () => {
     PopupActions.close();
-    reset();
   };
 
   const getDropZoneContent = () => {
@@ -68,7 +66,7 @@ const LoadFromDb = ({
         <>
           <img draggable={false} alt={'upload'} src={'ico/box-opened.png'} />
           <p className='extraBold'>Add new images</p>
-          <p>or</p>1<p className='extraBold'>Click here to select them</p>
+          <p>or</p><p className='extraBold'>Click here to select them</p>
         </>
       );
     else if (filesLength === 1)
