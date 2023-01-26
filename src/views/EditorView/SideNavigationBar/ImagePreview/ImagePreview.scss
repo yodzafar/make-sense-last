@@ -29,6 +29,19 @@
       justify-content: center;
       position: relative;
       width: 80%;
+
+      .rejected-text {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 14px;
+        color: #fff;
+        background-color: rgba(0,0,0,.4);
+        z-index: 30;
+      }
     }
 
     .Image {
@@ -63,6 +76,9 @@
         color: #222;
         height: 30px;
         cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
         &.primary {
           background-color: #83fac3;

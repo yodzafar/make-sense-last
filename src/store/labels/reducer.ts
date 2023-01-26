@@ -1,11 +1,12 @@
-import {LabelsActionTypes, LabelsState, ImageData} from './types';
-import {Action} from '../Actions';
+import { ImageData, LabelsActionTypes, LabelsState } from './types';
+import { Action } from '../Actions';
 
 const initialState: LabelsState = {
     activeImageIndex: null,
     activeLabelNameId: null,
     activeLabelType: null,
     activeLabelId: null,
+    updatingImageIds: {},
     highlightedLabelId: null,
     imagesData: [],
     firstLabelCreatedFlag: false,
@@ -73,6 +74,13 @@ export function labelsReducer(
                 labels: action.payload.labels
             }
         }
+        case Action.UPDATING_STATUS_LOADING:
+            return  {
+                ...state,
+                updatingImageIds: {
+                    ...action.payload
+                }
+            }
         case Action.UPDATE_FIRST_LABEL_CREATED_FLAG: {
             return {
                 ...state,

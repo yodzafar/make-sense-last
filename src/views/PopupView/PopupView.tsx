@@ -21,7 +21,7 @@ interface IProps {
 }
 
 const PopupView: React.FC<IProps> = ({ activePopupType }) => {
-
+  console.log(activePopupType);
   const selectPopup = () => {
     switch (activePopupType) {
       case PopupWindowType.LOAD_LABEL_NAMES:

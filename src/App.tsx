@@ -75,13 +75,12 @@ const App: React.FC<IProps> = (
 
   useEffect(() => {
     if (userId && dtlSeq) {
-      // updateActivePopupType(PopupWindowType.DIRECTORY)
+      updateActivePopupType(PopupWindowType.DIRECTORY);
       getImages({
         userId,
         qcCheck: !!qcID,
         dtlSeq
       });
-      getAnnotations(dtlSeq);
       getLabelOrder(dtlSeq);
     }
 
@@ -105,7 +104,7 @@ const mapDispatchToProps = {
   getImages: getTaskImages,
   getAnnotations: importAnnotation,
   getLabelOrder: importLabels,
-  updatePopupType: updateActivePopupType,
+  updatePopupType: updateActivePopupType
 };
 
 const mapStateToProps = (state: AppState) => ({

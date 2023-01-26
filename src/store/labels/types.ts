@@ -69,6 +69,7 @@ export type LabelsState = {
   imagesData: ImageData[];
   firstLabelCreatedFlag: boolean;
   labels: LabelName[];
+  updatingImageIds: { [key: string]: 1 | 2 | 0 }
 }
 
 interface UpdateActiveImageIndex {
@@ -76,6 +77,11 @@ interface UpdateActiveImageIndex {
   payload: {
     activeImageIndex: number;
   };
+}
+
+interface UpdateStatusLoading {
+  type: typeof Action.UPDATING_STATUS_LOADING,
+  payload: {[key: string]: 1 | 2 | 0}
 }
 
 interface UpdateActiveLabelNameId {
@@ -152,4 +158,5 @@ export type LabelsActionTypes = UpdateActiveImageIndex
   | UpdateActiveLabelId
   | UpdateHighlightedLabelId
   | UpdateFirstLabelCreatedFlag
+  | UpdateStatusLoading
 

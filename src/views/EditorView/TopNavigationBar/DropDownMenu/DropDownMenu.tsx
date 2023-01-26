@@ -19,7 +19,7 @@ interface IProps {
 const DropDownMenu: React.FC<IProps> = ({ updatePreventCustomCursorStatusAction, imageActionType, isHasImages }) => {
   const topAnchor = 35;
   const { queryData } = useUrlParams();
-  const qcID = queryData[QueryParamEnum.qsID] || 'kdatalabcloud';
+  const qcID = queryData[QueryParamEnum.qsID] ;
 
   const [activeTabIdx, setActiveTabIdx] = useState(null);
   const [activeDropDownAnchor, setDropDownAnchor] = useState(null);

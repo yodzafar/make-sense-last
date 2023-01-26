@@ -25,5 +25,17 @@ export const NotificationsDataMap = {
     [Notification.UNSUCCESSFUL_EXPORTED_ANNOTATION]: {
         header: 'Unsuccessfully exported annotation to database',
         description: 'Select label type and the file format you would like to use to export labels.'
+    },
+    [Notification.IMAGE_STATUS_CHANGED_APPROVED]: {
+        header: 'Successfully changed image status to APPROVED',
+        description: ''
+    },
+    [Notification.IMAGE_STATUS_CHANGED_REJECTED]: {
+        header: 'Successfully changed image status to REJECTED',
+        description: ''
+    },
+    [Notification.UNSUCCESSFULLY_CHANGED_STATUS]: {
+        header: 'Unsuccessfully changed image status',
+        description: ''
     }
 }

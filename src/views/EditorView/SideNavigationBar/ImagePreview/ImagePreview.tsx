@@ -16,6 +16,7 @@ import { CSSHelper } from '../../../../logic/helpers/CSSHelper';
 import { getUrlParam } from '../../../../hooks/useUrlParams';
 import { TaskImageStatus } from '../../../../entities/image';
 import { QueryParamEnum } from '../../../../data/QueryParam';
+import { CircularProgress } from '@mui/material';
 
 interface IProps {
   imageData: ImageData;
@@ -27,6 +28,7 @@ interface IProps {
   isSelected?: boolean;
   updateImageDataById: (id: string, newImageData: ImageData) => void;
   updateImageStatus: (dtlSeq: string, loginId: string, qcId: string, image: ImageData, status: TaskImageStatus) => void;
+  updatingImages: { [key: string]: 1 | 2 | 0 };
 }
 
 interface IState {
@@ -154,12 +156,15 @@ class ImagePreview extends React.Component<IProps, IState> {
     const {
       isChecked,
       style,
-      onClick
+      onClick,
+      updatingImages
     } = this.props;
 
     const urlData = getUrlParam();
-    const qcID = urlData.qcID || 'kdatalabcloud';
+    const qcID = urlData[QueryParamEnum.qsID];
     const imageData = this.props.imageData;
+    const approvedUpdating = updatingImages[imageData.id] === 1
+    const rejectedUpdating = updatingImages[imageData.id] === 2
 
     return (
       <div
@@ -182,6 +187,12 @@ class ImagePreview extends React.Component<IProps, IState> {
                   alt={this.state.image.alt}
                   // style={{ ...this.getStyle(), left: 0, top: 0 }}
                 />
+                {
+                  imageData.status === 'REJECTED' ? <div className='rejected-text'>Rejected</div> : null
+                }
+                {
+                  imageData.status === 'APPROVED' ? <div className='rejected-text'>Approved</div> : null
+                }
                 <div
                   className='Background'
                   key={'Background'}
@@ -197,8 +208,16 @@ class ImagePreview extends React.Component<IProps, IState> {
               {
                 qcID && qcID === imageData.adminID && imageData.status !== 'APPROVED' && (
                   <div className='Image-buttons'>
-                    <button onClick={() => this.handleEditStatus('APPROVED')} className='primary'>approve</button>
-                    <button onClick={() => this.handleEditStatus('REJECTED')} className='danger'>reject</button>
+                    <button onClick={() => this.handleEditStatus('APPROVED')} className='primary'>
+                      {
+                        approvedUpdating? <CircularProgress sx={{color: '#222'}} size={12} />: 'approve'
+                      }
+                    </button>
+                    <button onClick={() => this.handleEditStatus('REJECTED')} className='danger'>
+                      {
+                        rejectedUpdating? <CircularProgress sx={{color: '#222'}} size={12} />: 'reject'
+                      }
+                    </button>
                   </div>
                 )
               }
@@ -224,7 +243,9 @@ const mapDispatchToProps = {
   updateImageStatus
 };
 
-const mapStateToProps = (state: AppState) => ({});
+const mapStateToProps = (state: AppState) => ({
+  updatingImages: state.labels.updatingImageIds
+});
 
 export default connect(
   mapStateToProps,

@@ -3,6 +3,9 @@ import { Action } from '../Actions';
 import { LabelType } from '../../data/enums/LabelType';
 import { TaskImageStatus } from '../../entities/image';
 import api from '../../service/api';
+import { NotificationUtil } from '../../utils/NotificationUtil';
+import { NotificationsDataMap } from '../../data/info/NotificationsData';
+import { Notification } from '../../data/enums/Notification';
 
 export function updateActiveImageIndex(activeImageIndex: number): LabelsActionTypes {
   return {
@@ -99,15 +102,31 @@ export function updateFirstLabelCreatedFlag(firstLabelCreatedFlag: boolean): Lab
 export function updateImageStatus(dtlSeq: string, loginId: string, qcId: string, image: ImageData, status: TaskImageStatus) {
   return async dispatch => {
     try {
+      dispatch({type: Action.UPDATING_STATUS_LOADING, payload: {[image.id]: status === 'APPROVED' ? 1 : 2}})
       await api.checkTask([{ attSeq: image.id, taskCheckStatEnum: status }], {
         taskId: dtlSeq,
         qcId,
         loginId
       });
-      dispatch({type: Action.UPDATE_IMAGE_DATA_BY_ID, payload: { id: image.id, newImageData: {...image, status}}})
+      dispatch({ type: Action.UPDATE_IMAGE_DATA_BY_ID, payload: { id: image.id, newImageData: { ...image, status } } });
+      dispatch({
+        type: Action.SUBMIT_NEW_NOTIFICATION, payload: {
+          notification: NotificationUtil
+            .createMessageNotification(NotificationsDataMap[status === 'APPROVED'
+              ? Notification.IMAGE_STATUS_CHANGED_APPROVED
+              : Notification.IMAGE_STATUS_CHANGED_REJECTED])
+        }
+      });
     } catch (e) {
       // tslint:disable-next-line:no-console
       console.log(e);
+      dispatch({
+        type: Action.SUBMIT_NEW_NOTIFICATION, payload: NotificationUtil
+          .createMessageNotification(NotificationsDataMap[Notification.UNSUCCESSFULLY_CHANGED_STATUS])
+      })
+    }
+    finally {
+      dispatch({type: Action.UPDATING_STATUS_LOADING, payload: {[image.id]: 0}})
     }
   };
 }
