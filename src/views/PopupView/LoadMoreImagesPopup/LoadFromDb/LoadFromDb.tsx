@@ -29,7 +29,6 @@ const LoadFromDb = ({
   changeActiveImageIndex,
   activeImageIndex,
   addImage,
-  reset,
   images,
 }: IProps) => {
   const filesLength = useMemo(
