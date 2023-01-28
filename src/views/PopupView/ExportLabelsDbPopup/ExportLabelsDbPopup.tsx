@@ -8,17 +8,15 @@ import { ImageButton } from '../../Common/ImageButton/ImageButton';
 import { LabelType } from '../../../data/enums/LabelType';
 import './ExportLabelsDbPopup.scss';
 import { PopupActions } from '../../../logic/actions/PopupActions';
-import { ExportDbObject } from '../../../logic/export-db/types';
 import { RectLabelDbExporter } from '../../../logic/export-db/RectLabelDbExporter';
-import { PointLabelDbExporter } from '../../../logic/export-db/PointLabelDbExporter';
-import { PolygonLabelDbExporter } from '../../../logic/export-db/PolygonLabelDbExporter';
-import { LineLabelDbExport } from '../../../logic/export-db/LineLabelDbExport';
 import { submitNewNotification } from '../../../store/notifications/actionCreators';
 import { INotification } from '../../../store/notifications/types';
 import httpClient from '../../../service';
 import { NotificationUtil } from '../../../utils/NotificationUtil';
 import { NotificationsDataMap } from '../../../data/info/NotificationsData';
 import { Notification } from '../../../data/enums/Notification';
+import { getUrlParam } from '../../../hooks/useUrlParams';
+import { QueryParamEnum } from '../../../data/QueryParam';
 
 interface IProps {
   submitNewNotificationAction: (notification: INotification) => void;
@@ -27,6 +25,8 @@ interface IProps {
 const ExportLabelsDbPopup = ({ submitNewNotificationAction }: IProps) => {
   const [labelType, setLabelType] = useState<LabelType>(LabelType.RECT);
   const [loading, setLoading] = useState<boolean>(false);
+  const queryData = getUrlParam();
+  const dtlSeq = queryData[QueryParamEnum.DtlSeq];
 
   const renderContent = () => {
     return (
@@ -100,10 +100,10 @@ const ExportLabelsDbPopup = ({ submitNewNotificationAction }: IProps) => {
 
   const onAccept = useCallback(async () => {
     const data = RectLabelDbExporter.getRectData();
-    if (data.length > 0) {
+    if (data.length > 0 && dtlSeq) {
       try {
         setLoading(true);
-        await httpClient.post('/api/save', data, { params: { dtlSeq: 1 } });
+        await httpClient.post('/api/save', data, { params: { dtlSeq} });
         submitNewNotificationAction(NotificationUtil
           .createMessageNotification(NotificationsDataMap[Notification.SUCCESSFUL_EXPORTED_ANNOTATION]));
         PopupActions.close();
@@ -116,7 +116,7 @@ const ExportLabelsDbPopup = ({ submitNewNotificationAction }: IProps) => {
         setLoading(false);
       }
     }
-  }, []);
+  }, [dtlSeq]);
 
   const onReject = useCallback(() => {
     PopupActions.close();
